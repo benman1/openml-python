@@ -763,7 +763,12 @@ class SklearnExtension(Extension):
         # sorted concatenation of all modules which are present in this run.
         model_package_name = model.__module__.split('.')[0]
         module = importlib.import_module(model_package_name)
-        model_package_version_number = module.__version__  # type: ignore
+        if '__version__' in module.__dict__:
+            model_package_version_number = module.__version__  # type: ignore
+        else:
+            print('{} does not have a version number!'.format(module))
+            print('setting to 1.0. This is a hack.')
+            model_package_version_number = 1.0
         external_version = self._format_external_version(
             model_package_name, model_package_version_number,
         )
